@@ -1,69 +1,70 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const taskInput = document.getElementById('taskInput');
-    const addTaskButton = document.getElementById('addTaskButton');
-    const taskList = document.getElementById('taskList');
+    const taskInput = document.getElementById('newTaskInput');
+    const addTaskButton = document.getElementById('btnAddTask');
+    const tasksList = document.getElementById('tasksList');
 
-    // Function to add a new task
-    function addTask() {
-        const taskText = taskInput.value.trim();
-        if (taskText === '') return;
-
-        const li = document.createElement('li');
+    const createTaskItem = (taskText) => {
+        const taskItem = document.createElement('li');
         
-        const taskDate = new Date().toLocaleDateString();
-        const dateSpan = document.createElement('span');
-        dateSpan.textContent = taskDate;
-        dateSpan.classList.add('task-date');
+        const date = new Date().toLocaleDateString();
+        const dateElement = document.createElement('span');
+        dateElement.textContent = date;
+        dateElement.classList.add('date-label');
         
-        const taskTextSpan = document.createElement('span');
-        taskTextSpan.textContent = taskText;
+        const textElement = document.createElement('span');
+        textElement.textContent = taskText;
         
-        const completeButton = document.createElement('button');
-        completeButton.textContent = 'Completed';
-        completeButton.classList.add('complete-btn');
-        completeButton.addEventListener('click', () => {
-            li.classList.toggle('completed');
-            sortTasks();
+        const btnComplete = document.createElement('button');
+        btnComplete.textContent = 'Complete';
+        btnComplete.classList.add('btn-complete');
+        btnComplete.addEventListener('click', () => {
+            taskItem.classList.toggle('done');
+            organizeTasks();
         });
 
-        const importantButton = document.createElement('button');
-        importantButton.textContent = 'Important';
-        importantButton.classList.add('important-btn');
-        importantButton.addEventListener('click', () => {
-            li.classList.toggle('important');
-            sortTasks();
+        const btnImportant = document.createElement('button');
+        btnImportant.textContent = 'Important';
+        btnImportant.classList.add('btn-important');
+        btnImportant.addEventListener('click', () => {
+            taskItem.classList.toggle('important');
+            organizeTasks();
         });
 
-        li.appendChild(dateSpan);
-        li.appendChild(taskTextSpan);
-        li.appendChild(completeButton);
-        li.appendChild(importantButton);
-        taskList.appendChild(li);
+        taskItem.appendChild(dateElement);
+        taskItem.appendChild(textElement);
+        taskItem.appendChild(btnComplete);
+        taskItem.appendChild(btnImportant);
+        tasksList.appendChild(taskItem);
 
         taskInput.value = '';
-        sortTasks();
-    }
+        organizeTasks();
+    };
 
-    // Function to sort tasks: important tasks at the top, completed tasks at the bottom
-    function sortTasks() {
-        const tasks = Array.from(taskList.children);
+    const organizeTasks = () => {
+        const tasks = Array.from(tasksList.children);
         tasks.sort((a, b) => {
             if (a.classList.contains('important') && !b.classList.contains('important')) return -1;
             if (!a.classList.contains('important') && b.classList.contains('important')) return 1;
-            if (a.classList.contains('completed') && !b.classList.contains('completed')) return 1;
-            if (!a.classList.contains('completed') && b.classList.contains('completed')) return -1;
+            if (a.classList.contains('done') && !b.classList.contains('done')) return 1;
+            if (!a.classList.contains('done') && b.classList.contains('done')) return -1;
             return 0;
         });
-        tasks.forEach(task => taskList.appendChild(task));
-    }
+        tasks.forEach(task => tasksList.appendChild(task));
+    };
 
-    // Event listener for add button
-    addTaskButton.addEventListener('click', addTask);
+    addTaskButton.addEventListener('click', () => {
+        const taskText = taskInput.value.trim();
+        if (taskText !== '') {
+            createTaskItem(taskText);
+        }
+    });
 
-    // Event listener for enter key on input
-    taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            addTask();
+    taskInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            const taskText = taskInput.value.trim();
+            if (taskText !== '') {
+                createTaskItem(taskText);
+            }
         }
     });
 });
